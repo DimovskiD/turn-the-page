@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">TurnThePage</string>
+    <string name="search_icon">Search icon</string>
+    <string name="clear_icon">Clear icon</string>
+    <string name="search_books">Search books...</string>
+    <string name="something_went_wrong">Something went wrong... Please try again</string>
+</resources>
