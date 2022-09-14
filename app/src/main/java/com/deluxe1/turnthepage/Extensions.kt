@@ -12,6 +12,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.paging.PagingSource
 
 fun Spanned.toAnnotatedString(): AnnotatedString = buildAnnotatedString {
     val spanned = this@toAnnotatedString
@@ -43,3 +44,10 @@ fun Spanned.toAnnotatedString(): AnnotatedString = buildAnnotatedString {
         }
     }
 }
+
+
+fun PagingSource.LoadParams<Int>.prevKey() =
+    (key?.coerceAtLeast(0) ?: 0).takeIf { it > 0 }?.minus(loadSize)?.coerceAtLeast(0)
+
+fun PagingSource.LoadParams<Int>.nextKey(total: Int) =
+    (key?.coerceAtLeast(0) ?: 0).plus(loadSize).takeIf { it <= total }

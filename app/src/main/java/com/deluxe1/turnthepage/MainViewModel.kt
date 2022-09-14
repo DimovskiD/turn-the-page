@@ -12,9 +12,10 @@ private const val PAGE_SIZE = 10
 class MainViewModel : ViewModel() {
 
     var query = mutableStateOf("")
+        private set
 
     private val repo: BookRepository = BookRepository()
-    private var pagingSource = BookPagingSource(query.value, repo)
+    private lateinit var pagingSource : BookPagingSource
 
     val bookPager = Pager(PagingConfig(pageSize = PAGE_SIZE)) {
         BookPagingSource(query.value, repo).also { pagingSource = it }

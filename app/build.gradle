@@ -47,10 +47,9 @@ android {
 
 dependencies {
 
-    implementation "androidx.paging:paging-runtime:$paging_version"
+    implementation "androidx.paging:paging-runtime:3.1.1"
     implementation "androidx.paging:paging-compose:1.0.0-alpha16"
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
-    implementation 'com.google.code.gson:gson:2.9.1'
     implementation 'com.squareup.moshi:moshi-kotlin:1.13.0'
     implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
     implementation 'io.coil-kt:coil-compose:2.2.1'

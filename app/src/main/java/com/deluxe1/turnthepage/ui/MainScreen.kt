@@ -26,37 +26,37 @@ import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun MainScreen(books: LazyPagingItems<Book>, modifier: Modifier = Modifier) {
-    if (books.loadState.refresh == LoadState.Loading ||
-        books.loadState.append == LoadState.Loading
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CircularProgressIndicator()
+    when (books.loadState.refresh) {
+        LoadState.Loading -> {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator()
+            }
         }
-    } else if (books.loadState.append is LoadState.Error ||
-        books.loadState.refresh is LoadState.Error
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = stringResource(R.string.something_went_wrong))
+        is LoadState.Error -> {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = stringResource(R.string.something_went_wrong))
+            }
         }
-    } else {
-        LazyColumn(modifier = modifier) {
-            itemsIndexed(books) { index, item ->
-                item?.let {
-                    BookItem(
-                        book = item,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(getBackgroundForIndex(index))
-                            .padding(vertical = 15.dp)
-                    )
+        else -> {
+            LazyColumn(modifier = modifier) {
+                itemsIndexed(books) { index, item ->
+                    item?.let {
+                        BookItem(
+                            book = item,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(getBackgroundForIndex(index))
+                                .padding(vertical = 15.dp)
+                        )
+                    }
                 }
             }
         }
