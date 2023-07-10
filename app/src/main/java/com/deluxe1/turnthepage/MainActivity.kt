@@ -1,22 +1,19 @@
 package com.deluxe1.turnthepage
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.TopAppBar
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.deluxe1.turnthepage.ui.MainScreen
-import com.deluxe1.turnthepage.ui.composable.SearchView
+import com.deluxe1.turnthepage.ui.SplashScreen
 import com.deluxe1.turnthepage.ui.theme.TurnThePageTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,35 +24,35 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val books = mainViewModel.bookPager.collectAsLazyPagingItems()
-            val focusManager = LocalFocusManager.current
+            val valid by mainViewModel.valid.collectAsState()
+            val navController = rememberNavController()
+            val context = LocalContext.current
             TurnThePageTheme {
-                Scaffold(topBar = {
-                    TopAppBar(
-                        backgroundColor = MaterialTheme.colors.background
-                    ) {
-                        SearchView(
-                            query = mainViewModel.query.value,
-                            onQueryChanged = { newQuery ->
-                                mainViewModel.setQuery(newQuery)
+                NavHost(
+                    navController = navController,
+                    startDestination = "splash",
+                ) {
+                    composable(route = "splash") {
+                        SplashScreen(
+                            valid = valid,
+                            onStart = mainViewModel::trackSplashScreenStarted,
+                            onSplashEndedValid = {
+                                navController.navigate("main") {
+                                    popUpTo("splash") { inclusive = true }
+                                }
                             },
-                            onSearch = {
-                                mainViewModel.invalidateDataSource()
-                                focusManager.clearFocus()
-                            },
-                            onClearQuery = {
-                                mainViewModel.setQuery("")
-                                mainViewModel.invalidateDataSource()
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(
-                                    color = MaterialTheme.colors.background,
-                                    shape = RoundedCornerShape(8.dp)
-                                )
+                            onSplashEndedInvalid = {
+                                Toast.makeText(
+                                    context,
+                                    "Something went wrong..",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                         )
                     }
-                }) { padding ->
-                    MainScreen(books = books, modifier = Modifier.padding(padding))
+                    composable(route = "main") {
+                        MainScreen(books = books, mainViewModel = mainViewModel)
+                    }
                 }
             }
         }
